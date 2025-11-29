@@ -3,15 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Movie Project</title>
-
+    <title>MovieDB Manager</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <div class="container">
-        <h1>To be edited</h1>
-        <p>This is the starting point for our application.</p>
+    <nav class="top-nav">
+        <div class="container nav-content">
+            <a href="/" class="logo">MovieDB</a>
+            
+            <form action="/" method="GET" class="search-form">
+                
+                <input type="text" name="search" placeholder="Search titles..." value="{{ current_search }}">
+                
+                <select name="genre">
+                    <option value="">All Genres</option>
+                    {% for g in genres %}
+                        <option value="{{ g.GenreName }}" {% if g.GenreName == current_genre %}selected{% endif %}>
+                            {{ g.GenreName }}
+                        </option>
+                    {% endfor %}
+                </select>
+                
+                <button type="submit">Filter</button>
+            </form>
+
+            <div class="nav-links">
+                <a href="/recommendations" class="btn btn-secondary">Recommendations</a>
+                <a href="/add" class="btn btn-primary">+ Add Movie</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container main-content">
+        <div class="movie-grid">
+            {% for movie in movies %}
+            <div class="movie-card">
+                <div class="poster-wrapper">
+                    <img src="{{ movie.PosterLink }}" 
+                         alt="{{ movie.Title }}"
+                         onerror="this.src='https://placehold.co/150x220?text=No+Image'">
+                </div>
+                
+                <div class="card-content">
+                    <h3>{{ movie.Title }}</h3>
+                    <div class="meta">
+                        <span class="year">{{ movie.ReleasedYear }}</span>
+                        <span class="rating">★ {{ movie.IMDB_Rating }}</span>
+                    </div>
+                    <p class="runtime">{{ movie.Runtime }} min</p>
+                    
+                    <div class="actions">
+                        <a href="/edit/{{ movie.MovieID }}" class="btn-sm edit">Edit</a>
+                        <a href="/delete/{{ movie.MovieID }}" class="btn-sm delete" onclick="return confirm('Are you sure?')">Delete</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        {% if not movies %}
+        <div class="no-results" style="text-align: center; margin-top: 50px;">
+            <h2>No movies found matching your criteria.</h2>
+            <a href="/" class="btn btn-secondary" style="display: inline-block; margin-top: 10px;">Clear Filters</a>
+        </div>
+        {% endif %}
     </div>
 </body>
 </html>
-
