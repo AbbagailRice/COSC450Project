@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <title>Recommended Movies</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+    <!--takes you back to main page-->
+   <nav class="top-nav">
+        <div class="container nav-content">
+            <a href="/" class="logo">Movies Database</a>
+        </div>
+    </nav>
+
+    <div class="container main-content">
+        <h1>Find Movie Recommendations</h1>
+        <div class="form-container">
+            <form method="POST">
+                <div class="form-row">
+
+                    <div class="form-group">
+                        <label>Genre</label>
+                        <select name="genre">
+                            <option value="">Any</option>
+                            {% for g in genres %}
+                                <option value="{{ g.GenreName }}"
+                                    {% if current_genre == g.GenreName %}selected{% endif %}>
+                                    {{ g.GenreName }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Minimum Rating</label>
+                        <input type="number" name="rating" step="0.1" min="0" max="10"
+                               value="{{ current_rating if current_rating else '' }}"
+                               placeholder="e.g. 7.5">
+                    </div>
+
+                </div>
+
+                    <div class="form-group">
+                        <label>Released After</label>
+                        <input type="number" name="year"
+                            min="1900"
+                               value="{{ current_year if current_year else '' }}"
+                               placeholder="e.g. 2010">
+                    </div>
+                </div>
+
+                <div class="form-actions" style="padding: 20px;">
+                    <button type="submit" class="btn btn-primary">Get Recommendations</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="container main-content">
+        {% if recommendations is not none %}
+            {% if recommendations %}
+                <div class="movie-grid">
+                    {% for m in recommendations %}
+                        <div class="movie-card">
+                            <div class="poster-wrapper">
+                                <img src="{{ m.PosterLink }}" alt="{{ m.Title }}"
+                                onerror="this.src='https://placehold.co/150x220?text=No+Image'">
+                            </div>
+                            <div class="card-content">
+                                <h3>{{ m.Title }}</h3>
+                                <div class="meta">
+                                    <span>{{ m.ReleasedYear }}</span>
+                                    <span class="rating">{{ m.IMDB_Rating }}</span>
+                                </div>
+                                <p class="runtime">{{ m.Runtime }} min</p>
+                                <p style="font-size:0.85rem;">
+                                    {{ m.Overview[:120] }}{% if m.Overview|length > 120 %}...{% endif %}
+                                </p>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="no-results">No movies match your filters.</p>
+            {% endif %}
+        {% endif %}
+    </div> 
+</body>
+</html>
